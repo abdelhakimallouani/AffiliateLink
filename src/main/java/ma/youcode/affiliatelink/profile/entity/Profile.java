@@ -4,16 +4,10 @@ import ma.youcode.affiliatelink.profile.enums.ProfileStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
+
 @Entity
-@Table(
-    name = "profile_profiles",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_profile_email",
-            columnNames = "email"
-        )
-    }
-)
+@Table(name = "profile_profiles")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Profile {
 
@@ -49,4 +43,3 @@ public abstract class Profile {
     }
 
 }
-
