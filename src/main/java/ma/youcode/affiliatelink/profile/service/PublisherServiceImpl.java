@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ma.youcode.affiliatelink.common.exception.EmailAlreadyUsedException;
+import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.CreatePublisherRequest;
 import ma.youcode.affiliatelink.profile.dto.PublisherResponse;
 import ma.youcode.affiliatelink.profile.entity.Publisher;
@@ -50,4 +51,17 @@ public class PublisherServiceImpl implements PublisherService {
                 .toList();
         return publishers;
     }
+
+    @Override
+    public PublisherResponse findPublisher(Long pubId) {
+
+        if (pubId == null) {
+            throw new ResourceNotFoundException("Publisher introuvable avec l'id : " + pubId);
+        }
+
+        Publisher pub = publisherRepository.findById(pubId).orElseThrow();
+        return new PublisherResponse(pub.getId(), pub.getEmail(), pub.getStatus(), pub.getFirstName(),
+                pub.getLastName(), pub.getNiche(), pub.getBio(), pub.getCountry());
+    }
+
 }

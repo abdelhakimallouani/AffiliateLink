@@ -9,5 +9,6 @@ public interface PublisherService {
 
     PublisherResponse createPublisher(CreatePublisherRequest request);
     List<PublisherResponse> showPublishers();
+    PublisherResponse findPublisher(Long pubId);
 }
 
