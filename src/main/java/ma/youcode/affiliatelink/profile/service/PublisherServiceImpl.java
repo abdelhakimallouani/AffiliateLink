@@ -1,9 +1,12 @@
 package ma.youcode.affiliatelink.profile.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ma.youcode.affiliatelink.common.exception.EmailAlreadyUsedException;
+import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.CreatePublisherRequest;
 import ma.youcode.affiliatelink.profile.dto.PublisherResponse;
 import ma.youcode.affiliatelink.profile.entity.Publisher;
@@ -38,6 +41,27 @@ public class PublisherServiceImpl implements PublisherService {
         } catch (Exception e) {
             throw new EmailAlreadyUsedException(email);
         }
+    }
+
+    @Override
+    public List<PublisherResponse> showPublishers() {
+        List<PublisherResponse> publishers = publisherRepository
+                .findAll().stream().map(pub -> new PublisherResponse(pub.getId(), pub.getEmail(), pub.getStatus(),
+                        pub.getFirstName(), pub.getLastName(), pub.getNiche(), pub.getBio(), pub.getCountry()))
+                .toList();
+        return publishers;
+    }
+
+    @Override
+    public PublisherResponse findPublisher(Long pubId) {
+
+        if (pubId == null) {
+            throw new ResourceNotFoundException("Publisher introuvable avec l'id : " + pubId);
+        }
+
+        Publisher pub = publisherRepository.findById(pubId).orElseThrow();
+        return new PublisherResponse(pub.getId(), pub.getEmail(), pub.getStatus(), pub.getFirstName(),
+                pub.getLastName(), pub.getNiche(), pub.getBio(), pub.getCountry());
     }
 
 }
