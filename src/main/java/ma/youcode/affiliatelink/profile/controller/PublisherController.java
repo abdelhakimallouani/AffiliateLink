@@ -1,9 +1,12 @@
 package ma.youcode.affiliatelink.profile.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +30,11 @@ public class PublisherController {
     public ResponseEntity<PublisherResponse> createPub(@Valid @RequestBody CreatePublisherRequest req) {
         PublisherResponse publisher = publisherService.createPublisher(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(publisher);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<PublisherResponse>> showPublishers(){
+        return ResponseEntity.ok(publisherService.showPublishers());
     }
 
 }

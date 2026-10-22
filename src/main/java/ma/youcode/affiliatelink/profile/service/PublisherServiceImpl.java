@@ -1,5 +1,7 @@
 package ma.youcode.affiliatelink.profile.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,4 +42,12 @@ public class PublisherServiceImpl implements PublisherService {
         }
     }
 
+    @Override
+    public List<PublisherResponse> showPublishers() {
+        List<PublisherResponse> publishers = publisherRepository
+                .findAll().stream().map(pub -> new PublisherResponse(pub.getId(), pub.getEmail(), pub.getStatus(),
+                        pub.getFirstName(), pub.getLastName(), pub.getNiche(), pub.getBio(), pub.getCountry()))
+                .toList();
+        return publishers;
+    }
 }
