@@ -2,9 +2,6 @@ package ma.youcode.affiliatelink.profile.entity;
 
 import ma.youcode.affiliatelink.profile.enums.ProfileStatus;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-
-import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 
 @Entity
 @Table(name = "profile_profiles")
