@@ -1,9 +1,12 @@
 package ma.youcode.affiliatelink.profile.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ma.youcode.affiliatelink.common.exception.EmailAlreadyUsedException;
+import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.AdvertiserResponse;
 import ma.youcode.affiliatelink.profile.dto.CreateAdvertiserRequest;
 import ma.youcode.affiliatelink.profile.entity.Advertiser;
@@ -40,6 +43,27 @@ public class AdvertiserServiceImpl implements AdvertiserService {
         } catch (Exception e) {
             throw new EmailAlreadyUsedException(email);
         }
+    }
+
+    @Override
+    public List<AdvertiserResponse> showAdvertiser() {
+        List<AdvertiserResponse> advertisers = advertiserRepository.findAll().stream()
+                .map(a -> new AdvertiserResponse(a.getId(), a.getEmail(), a.getStatus(), a.getCompanyName(),
+                        a.getSector(), a.getWebsite()))
+                .toList();
+
+        return advertisers;
+    }
+
+    @Override
+    public AdvertiserResponse findAdvertiser(Long advId) {
+        if (advId == null) {
+            throw new ResourceNotFoundException("Advertiser introuvable avec l'id : " + advId);
+        }
+
+        Advertiser advResponse = advertiserRepository.findById(advId).orElseThrow();
+        return new AdvertiserResponse(advResponse.getId(), advResponse.getEmail(), advResponse.getStatus(),
+                advResponse.getCompanyName(), advResponse.getSector(), advResponse.getWebsite());
     }
 
 }

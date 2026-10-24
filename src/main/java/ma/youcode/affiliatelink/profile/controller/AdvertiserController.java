@@ -1,6 +1,9 @@
 package ma.youcode.affiliatelink.profile.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +29,11 @@ public class AdvertiserController {
     public AdvertiserResponse addAdvertiser(@Valid @RequestBody CreateAdvertiserRequest req) {
         AdvertiserResponse advResponse = advertiserService.createAdvertiser(req);
         return advResponse;
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<AdvertiserResponse> showAdvertisers(){
+        return advertiserService.showAdvertiser();
     }
 }
