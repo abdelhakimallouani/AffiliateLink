@@ -39,4 +39,8 @@ public abstract class Profile {
         return status;
     }
 
+    public void setStatus(ProfileStatus status) {
+        this.status = status;
+    }
+
 }
