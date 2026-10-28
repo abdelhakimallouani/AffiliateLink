@@ -1,5 +1,6 @@
 package ma.youcode.affiliatelink.profile.api;
 
-public class ProfileApi {
-    
+public interface ProfileApi {
+
+    boolean isActiveAdvertiser(Long advertiserId);
 }
