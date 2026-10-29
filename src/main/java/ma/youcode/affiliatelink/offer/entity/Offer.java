@@ -16,6 +16,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import ma.youcode.affiliatelink.offer.enums.Niche;
 import ma.youcode.affiliatelink.offer.enums.PayoutModel;
@@ -56,14 +58,101 @@ public class Offer {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-        @Column(nullable = false)
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "offer_tags",
-        joinColumns = @JoinColumn(name = "offer_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "offer_offer_tags", joinColumns = @JoinColumn(name = "offer_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
+
+    protected Offer() {
+    }
+
+    public Offer(String title, String description, String targetUrl, Long advertiserId, Niche niche,
+            PayoutModel payoutModel, BigDecimal payoutValue) {
+        this.title = title;
+        this.description = description;
+        this.targetUrl = targetUrl;
+        this.advertiserId = advertiserId;
+        this.niche = niche;
+        this.payoutModel = payoutModel;
+        this.payoutValue = payoutValue;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public Long getAdvertiserId() {
+        return advertiserId;
+    }
+
+    public Niche getNiche() {
+        return niche;
+    }
+
+    public PayoutModel getPayoutModel() {
+        return payoutModel;
+    }
+
+    public BigDecimal getPayoutValue() {
+        return payoutValue;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
 }

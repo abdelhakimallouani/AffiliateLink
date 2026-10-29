@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "offer_tags")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +17,10 @@ public class Tag {
     private String name;
 
     protected Tag() {
+    }
+
+    public Tag(String name) {
+        this.name = name;
     }
 
     public Long getId() {
