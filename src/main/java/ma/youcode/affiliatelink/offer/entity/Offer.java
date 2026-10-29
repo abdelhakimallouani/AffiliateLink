@@ -2,9 +2,12 @@ package ma.youcode.affiliatelink.offer.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -30,6 +34,9 @@ public class Offer {
     private Long id;
 
     @Column(nullable = false)
+    private Long advertiserId;
+
+    @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
@@ -38,28 +45,15 @@ public class Offer {
     @Column(nullable = false)
     private String targetUrl;
 
-    @Column(nullable = false)
-    private Long advertiserId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Niche niche;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PayoutModel payoutModel;
-
-    @Column(nullable = false)
-    private BigDecimal payoutValue;
-
-    @Column(nullable = false)
-    private boolean active = true;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
+    private List<Campaign> campaigns = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "offer_offer_tags", joinColumns = @JoinColumn(name = "offer_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -68,43 +62,39 @@ public class Offer {
     protected Offer() {
     }
 
-    public Offer(String title, String description, String targetUrl, Long advertiserId, Niche niche,
-            PayoutModel payoutModel, BigDecimal payoutValue) {
+    public Offer(Long advertiserId, String title, String description, String targetUrl, Niche niche) {
+        this.advertiserId = advertiserId;
         this.title = title;
         this.description = description;
         this.targetUrl = targetUrl;
-        this.advertiserId = advertiserId;
         this.niche = niche;
-        this.payoutModel = payoutModel;
-        this.payoutValue = payoutValue;
+
     }
 
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
-        this.updatedAt = now;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public void addCampaign(Campaign campaign) {
+        campaigns.add(campaign);
+        campaign.setOffer(this);
+    }
+
+    public void removeCampaign(Campaign campaign) {
+        campaigns.remove(campaign);
+        campaign.setOffer(null);
     }
 
     public void addTag(Tag tag) {
         tags.add(tag);
+        tag.getOffers().add(this);
     }
 
     public void removeTag(Tag tag) {
         tags.remove(tag);
-    }
-
-    public void activate() {
-        this.active = true;
-    }
-
-    public void deactivate() {
-        this.active = false;
+        tag.getOffers().remove(this);
     }
 
     public Long getId() {
@@ -131,24 +121,12 @@ public class Offer {
         return niche;
     }
 
-    public PayoutModel getPayoutModel() {
-        return payoutModel;
-    }
-
-    public BigDecimal getPayoutValue() {
-        return payoutValue;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public List<Campaign> getCampaigns() {
+        return campaigns;
     }
 
     public Set<Tag> getTags() {

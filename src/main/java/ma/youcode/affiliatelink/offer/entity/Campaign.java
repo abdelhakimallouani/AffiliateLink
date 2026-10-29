@@ -45,19 +45,16 @@ public class Campaign {
     @Column(nullable = false)
     private BigDecimal payoutValue;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "offer_id", nullable = false)
-    private Offer offer;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CampaignStatus status = CampaignStatus.DRAFT;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "offer_id", nullable = false)
+    private Offer offer;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    protected Campaign() {
+    }
 
     public Campaign(String name, LocalDateTime startDate, LocalDateTime endDate, BigDecimal budget,
             PayoutModel payoutModel, BigDecimal payoutValue, Offer offer) {
@@ -71,19 +68,8 @@ public class Campaign {
         this.status = CampaignStatus.DRAFT;
     }
 
-    protected Campaign() {
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public void setOffer(Offer offer) {
+        this.offer = offer;
     }
 
     public Long getId() {
@@ -122,16 +108,24 @@ public class Campaign {
         return status;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setStatus(CampaignStatus status) {
         this.status = status;
+    }
+
+    public void updateDetails(
+            String name,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            BigDecimal budget,
+            PayoutModel payoutModel,
+            BigDecimal payoutValue) {
+
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budget = budget;
+        this.payoutModel = payoutModel;
+        this.payoutValue = payoutValue;
     }
 
 }
