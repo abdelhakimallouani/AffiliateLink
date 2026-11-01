@@ -10,7 +10,7 @@ public record OfferResponse(
         Long advertiserId,
         String title,
         String description,
-        String landingUrl,
+        String targetUrl,
         Niche niche,
         LocalDateTime createdAt,
         Set<TagResponse> tags) {

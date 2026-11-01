@@ -5,6 +5,9 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
@@ -17,6 +20,8 @@ import ma.youcode.affiliatelink.offer.repository.TagRepository;
 import ma.youcode.affiliatelink.profile.api.AdvertiserAvailability;
 import ma.youcode.affiliatelink.profile.api.ProfileApi;
 
+@Service
+@Transactional
 public class OfferServiceImpl implements OfferService {
 
     private final OfferRepository offerRepository;
@@ -45,10 +50,20 @@ public class OfferServiceImpl implements OfferService {
                     "impossible de creer une offer : " + req.advertiserId());
         }
 
-        Set<String> tags = req.tags().stream().map(t -> t.trim().toLowerCase())
+        Set<String> newTags = req.tags().stream().map(t -> t.trim().toLowerCase())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-                
+
+        Set<Tag> tags = newTags.stream()
+                .map(t -> tagRepository.findByName(t).orElseGet(() -> tagRepository.save(new Tag(t))))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
         Offer offer = offerMapper.toEntity(req);
+
+        tags.forEach(offer::addTag);
+
+        Offer saveOffer = offerRepository.save(offer);
+
+        return offerMapper.toResponse(saveOffer);
 
     }
 

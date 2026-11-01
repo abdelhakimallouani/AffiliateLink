@@ -17,7 +17,7 @@ public record CreateOfferRequest(
 
         @NotBlank String description,
 
-        @NotBlank String landingUrl,
+        @NotBlank String targetUrl,
 
         @NotNull Niche niche,
 
