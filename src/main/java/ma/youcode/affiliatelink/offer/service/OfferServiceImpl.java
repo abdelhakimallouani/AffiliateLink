@@ -1,10 +1,16 @@
 package ma.youcode.affiliatelink.offer.service;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
 import ma.youcode.affiliatelink.offer.entity.Offer;
+import ma.youcode.affiliatelink.offer.entity.Tag;
 import ma.youcode.affiliatelink.offer.mapper.OfferMapper;
 import ma.youcode.affiliatelink.offer.repository.OfferRepository;
 import ma.youcode.affiliatelink.offer.repository.TagRepository;
@@ -39,9 +45,11 @@ public class OfferServiceImpl implements OfferService {
                     "impossible de creer une offer : " + req.advertiserId());
         }
 
+        Set<String> tags = req.tags().stream().map(t -> t.trim().toLowerCase())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+                
         Offer offer = offerMapper.toEntity(req);
 
-        
     }
 
 }
