@@ -1,28 +1,27 @@
 package ma.youcode.affiliatelink.offer.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Positive;
+
 
 import ma.youcode.affiliatelink.offer.enums.Niche;
 
 public record CreateOfferRequest(
 
-        @NotNull @Positive Long advertiserId,
+        @NotNull Long advertiserId,
 
         @NotBlank String title,
 
         @NotBlank String description,
 
-        @NotBlank String landingUrl,
+        @NotBlank String targetUrl,
 
         @NotNull Niche niche,
 
-        @NotNull List<@NotBlank String> tags
+        @NotEmpty Set<@NotBlank String> tags
 
 ) {
 }
