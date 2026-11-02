@@ -12,6 +12,8 @@ import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
 import ma.youcode.affiliatelink.offer.service.OfferService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/offres")
@@ -28,6 +30,12 @@ public class OfferController {
 
         OfferResponse response = offerService.craeteOffer(request);
         return response;
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<OfferResponse> getAllOffers() {
+        return offerService.getAllOffers();
     }
 
 }
