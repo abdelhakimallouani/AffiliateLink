@@ -1,6 +1,7 @@
 package ma.youcode.affiliatelink.offer.service;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -67,4 +68,10 @@ public class OfferServiceImpl implements OfferService {
 
     }
 
+    @Override
+    public List<OfferResponse> getAllOffers() {
+        return offerRepository.findAll().stream()
+                .map(offerMapper::toResponse)
+                .toList();
+    }
 }
