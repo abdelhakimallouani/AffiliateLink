@@ -133,4 +133,40 @@ public class Offer {
         return tags;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setAdvertiserId(Long advertiserId) {
+        this.advertiserId = advertiserId;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
+    }
+
+    public void setNiche(Niche niche) {
+        this.niche = niche;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setCampaigns(List<Campaign> campaigns) {
+        this.campaigns = campaigns;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
 }

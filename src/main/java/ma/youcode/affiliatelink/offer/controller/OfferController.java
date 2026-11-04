@@ -2,6 +2,7 @@ package ma.youcode.affiliatelink.offer.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.validation.Valid;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
+import ma.youcode.affiliatelink.offer.dto.UpdateOfferRequest;
 import ma.youcode.affiliatelink.offer.enums.Niche;
 import ma.youcode.affiliatelink.offer.service.OfferService;
 
@@ -69,6 +71,12 @@ public class OfferController {
     @ResponseStatus(HttpStatus.OK)
     public OfferResponse getOfferById(@PathVariable Long id) {
         return offerService.getOfferById(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public OfferResponse updateOffer(@PathVariable Long id, @Valid @RequestBody UpdateOfferRequest request) {
+        return offerService.updateOffer(id, request);
     }
 
 }
