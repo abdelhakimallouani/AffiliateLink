@@ -2,6 +2,7 @@ package ma.youcode.affiliatelink.offer.service;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
+import ma.youcode.affiliatelink.offer.dto.UpdateOfferRequest;
 import ma.youcode.affiliatelink.offer.entity.Offer;
 import ma.youcode.affiliatelink.offer.entity.Tag;
 import ma.youcode.affiliatelink.offer.enums.Niche;
@@ -94,6 +96,40 @@ public class OfferServiceImpl implements OfferService {
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id " + id));
 
         return offerMapper.toResponse(offer);
+    }
+
+    @Override
+    @Transactional
+    public OfferResponse updateOffer(Long id, UpdateOfferRequest request) {
+
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Offer not found with id: " + id));
+
+        // offerMapper.updateEntity(request, offer);
+        offer.setTitle(request.title());
+        offer.setDescription(request.description());
+        offer.setTargetUrl(request.targetUrl());
+        offer.setNiche(request.niche());
+
+        Set<String> tagNames = request.tags().stream()
+                .map(name -> name.trim().toLowerCase(Locale.ROOT))
+                .filter(name -> !name.isBlank())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Set<Tag> newTags = tagNames.stream()
+                .map(name -> tagRepository.findByName(name)
+                        .orElseGet(() -> tagRepository.save(new Tag(name))))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        offer.getTags().forEach(tag -> tag.getOffers().remove(offer));
+        offer.getTags().clear();
+
+        newTags.forEach(offer::addTag);
+
+        Offer updatedOffer = offerRepository.save(offer);
+
+        return offerMapper.toResponse(updatedOffer);
     }
 
 }
