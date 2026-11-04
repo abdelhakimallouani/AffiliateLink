@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,11 @@ import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
 import ma.youcode.affiliatelink.offer.entity.Offer;
 import ma.youcode.affiliatelink.offer.entity.Tag;
+import ma.youcode.affiliatelink.offer.enums.Niche;
 import ma.youcode.affiliatelink.offer.mapper.OfferMapper;
 import ma.youcode.affiliatelink.offer.repository.OfferRepository;
 import ma.youcode.affiliatelink.offer.repository.TagRepository;
+import ma.youcode.affiliatelink.offer.specification.OfferSpecification;
 import ma.youcode.affiliatelink.profile.api.AdvertiserAvailability;
 import ma.youcode.affiliatelink.profile.api.ProfileApi;
 
@@ -74,4 +78,22 @@ public class OfferServiceImpl implements OfferService {
                 .map(offerMapper::toResponse)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OfferResponse> getOffers(Niche niche, Long advertiserId, String tag, String keyword,
+            Pageable pageable) {
+        return offerRepository.findAll(OfferSpecification.filterOffers(niche, advertiserId, tag, keyword), pageable)
+                .map(offerMapper::toResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OfferResponse getOfferById(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id " + id));
+
+        return offerMapper.toResponse(offer);
+    }
+
 }
