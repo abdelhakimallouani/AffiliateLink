@@ -21,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 
 @RestController
@@ -43,7 +45,7 @@ public class OfferController {
     // @GetMapping
     // @ResponseStatus(HttpStatus.OK)
     // public List<OfferResponse> getAllOffers() {
-    //     return offerService.getAllOffers();
+    // return offerService.getAllOffers();
     // }
 
     @GetMapping
@@ -65,6 +67,8 @@ public class OfferController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public OfferResponse getOfferById()
+    public OfferResponse getOfferById(@PathVariable Long id) {
+        return offerService.getOfferById(id);
+    }
 
 }
