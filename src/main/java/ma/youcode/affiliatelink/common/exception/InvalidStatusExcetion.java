@@ -1,7 +1,10 @@
 package ma.youcode.affiliatelink.common.exception;
 
-public class InvalidStatusExcetion extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+public class InvalidStatusExcetion extends ResponseStatusException {
     public InvalidStatusExcetion(String message) {
-        super(message);
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

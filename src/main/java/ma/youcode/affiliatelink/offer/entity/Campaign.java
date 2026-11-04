@@ -67,6 +67,16 @@ public class Campaign {
         this.offer = offer;
         this.status = CampaignStatus.DRAFT;
     }
+    public Campaign(String name, LocalDateTime startDate, LocalDateTime endDate, BigDecimal budget,
+            PayoutModel payoutModel, BigDecimal payoutValue) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budget = budget;
+        this.payoutModel = payoutModel;
+        this.payoutValue = payoutValue;
+        this.status = CampaignStatus.DRAFT;
+    }
 
     public void setOffer(Offer offer) {
         this.offer = offer;

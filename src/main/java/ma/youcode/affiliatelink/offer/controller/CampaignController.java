@@ -1,5 +1,27 @@
 package ma.youcode.affiliatelink.offer.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import ma.youcode.affiliatelink.offer.dto.CampaignResponse;
+import ma.youcode.affiliatelink.offer.dto.CreateCampaignRequest;
+import ma.youcode.affiliatelink.offer.service.CampaignService;
+
+@RestController 
+@RequestMapping("/api/offres/{id}/campaigns")
 public class CampaignController {
+    private  final CampaignService campaignService;
+
+    public CampaignController(CampaignService campaignService) {
+        this.campaignService = campaignService;
+    }
+
+    @PostMapping
+    public CampaignResponse createCampaign(@PathVariable("id") Long id, @Valid @RequestBody CreateCampaignRequest request){
+        return 
+    }
     
 }
