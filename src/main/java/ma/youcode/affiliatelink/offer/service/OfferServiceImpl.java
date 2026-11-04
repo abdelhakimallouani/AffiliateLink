@@ -87,4 +87,13 @@ public class OfferServiceImpl implements OfferService {
                 .map(offerMapper::toResponse);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OfferResponse getOfferById(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id " + id));
+
+        return offerMapper.toResponse(offer);
+    }
+
 }

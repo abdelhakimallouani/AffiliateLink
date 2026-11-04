@@ -63,4 +63,8 @@ public class OfferController {
         return offers;
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public OfferResponse getOfferById()
+
 }
