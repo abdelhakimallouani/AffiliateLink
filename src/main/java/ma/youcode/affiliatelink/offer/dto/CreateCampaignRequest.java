@@ -1,7 +1,6 @@
 package ma.youcode.affiliatelink.offer.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
