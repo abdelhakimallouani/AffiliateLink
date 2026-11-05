@@ -9,6 +9,7 @@ import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CampaignResponse;
 import ma.youcode.affiliatelink.offer.dto.CreateCampaignRequest;
+import ma.youcode.affiliatelink.offer.dto.UpdateCampaignStatusRequest;
 import ma.youcode.affiliatelink.offer.entity.Campaign;
 import ma.youcode.affiliatelink.offer.entity.Offer;
 import ma.youcode.affiliatelink.offer.enums.CampaignStatus;
@@ -63,6 +64,23 @@ public class CampaignServiceImpl implements CampaignService {
                         campaign.getStartDate(), campaign.getEndDate(), campaign.getBudget(), campaign.getPayoutModel(),
                         campaign.getPayoutValue(), campaign.getStatus()))
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateCampaignStatus(Long camId, UpdateCampaignStatusRequest request) {
+        Campaign campaign = campaignRepository.findById(camId)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign not found with id: " + camId));
+
+        CampaignStatus newStatus = request.status();
+
+        if (campaign.getStatus() == newStatus) {
+            throw new InvalidStatusExcetion("Campaign already has this status");
+        }
+
+        campaign.setStatus(newStatus);
+
+        campaignRepository.save(campaign);
     }
 
 }

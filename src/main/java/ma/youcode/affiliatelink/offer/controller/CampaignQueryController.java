@@ -4,12 +4,18 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import ma.youcode.affiliatelink.offer.dto.CampaignResponse;
+import ma.youcode.affiliatelink.offer.dto.UpdateCampaignStatusRequest;
 import ma.youcode.affiliatelink.offer.enums.CampaignStatus;
 import ma.youcode.affiliatelink.offer.service.CampaignService;
 
@@ -28,4 +34,11 @@ public class CampaignQueryController {
     public List<CampaignResponse> getCampaignByStatus(@RequestParam CampaignStatus status) {
         return campaignService.getCampaigns(status);
     }
+
+    @PatchMapping("/{id}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateCampaignStatus(@PathVariable Long id, @Valid @RequestBody UpdateCampaignStatusRequest request) {
+        campaignService.updateCampaignStatus(id, request);
+    }
+
 }
