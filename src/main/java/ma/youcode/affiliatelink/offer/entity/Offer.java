@@ -1,6 +1,5 @@
 package ma.youcode.affiliatelink.offer.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,10 +20,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import ma.youcode.affiliatelink.offer.enums.Niche;
-import ma.youcode.affiliatelink.offer.enums.PayoutModel;
 
 @Entity
 @Table(name = "offers")

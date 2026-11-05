@@ -2,6 +2,7 @@ package ma.youcode.affiliatelink.offer.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,9 +14,9 @@ public record CreateCampaignRequest(
 
         @NotBlank @Size(max = 150) String name,
 
-        @NotNull LocalDate startDate,
+        @NotNull LocalDateTime startDate,
 
-        @NotNull LocalDate endDate,
+        @NotNull LocalDateTime endDate,
 
         @NotNull BigDecimal budget,
 
