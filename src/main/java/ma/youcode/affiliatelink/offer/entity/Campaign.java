@@ -13,8 +13,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import ma.youcode.affiliatelink.offer.enums.CampaignStatus;
 import ma.youcode.affiliatelink.offer.enums.PayoutModel;
@@ -65,6 +63,16 @@ public class Campaign {
         this.payoutModel = payoutModel;
         this.payoutValue = payoutValue;
         this.offer = offer;
+        this.status = CampaignStatus.DRAFT;
+    }
+    public Campaign(String name, LocalDateTime startDate, LocalDateTime endDate, BigDecimal budget,
+            PayoutModel payoutModel, BigDecimal payoutValue) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budget = budget;
+        this.payoutModel = payoutModel;
+        this.payoutValue = payoutValue;
         this.status = CampaignStatus.DRAFT;
     }
 
