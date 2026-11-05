@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import ma.youcode.affiliatelink.offer.dto.CampaignResponse;
 import ma.youcode.affiliatelink.offer.dto.UpdateCampaignStatusRequest;
 import ma.youcode.affiliatelink.offer.enums.CampaignStatus;
