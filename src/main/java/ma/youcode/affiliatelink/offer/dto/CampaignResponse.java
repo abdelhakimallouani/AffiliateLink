@@ -1,6 +1,5 @@
 package ma.youcode.affiliatelink.offer.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import ma.youcode.affiliatelink.offer.enums.CampaignStatus;
