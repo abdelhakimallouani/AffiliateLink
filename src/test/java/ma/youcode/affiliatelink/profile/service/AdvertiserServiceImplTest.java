@@ -1,6 +1,7 @@
 package ma.youcode.affiliatelink.profile.service;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ma.youcode.affiliatelink.common.exception.EmailAlreadyUsedException;
 import ma.youcode.affiliatelink.profile.dto.AdvertiserResponse;
 import ma.youcode.affiliatelink.profile.dto.CreateAdvertiserRequest;
 import ma.youcode.affiliatelink.profile.repository.AdvertiserRepository;
@@ -44,5 +46,19 @@ public class AdvertiserServiceImplTest {
 
         verify(profileRepository).existsByEmailIgnoreCase("allouani@gmail.com");
         verify(advertiserRepository).save(any());
+    }
+
+    @Test
+    public void createPublisher_shouldThrowException_whenEmailAlreadyExists() {
+
+        CreateAdvertiserRequest request = new CreateAdvertiserRequest("allouani@gmail.com", "YouCode", "Dev",
+                "www.youcode.ma");
+
+        when(profileRepository.existsByEmailIgnoreCase(request.email())).thenReturn(true);
+
+        assertThrows(EmailAlreadyUsedException.class, () -> advertiserService.createAdvertiser(request));
+
+        verify(profileRepository).existsByEmailIgnoreCase("allouani@gmail.com");
+        verify(advertiserRepository, never()).save(any());
     }
 }
