@@ -74,12 +74,12 @@ public class OfferServiceImpl implements OfferService {
 
     }
 
-    @Override
-    public List<OfferResponse> getAllOffers() {
-        return offerRepository.findAll().stream()
-                .map(offerMapper::toResponse)
-                .toList();
-    }
+//     @Override
+//     public List<OfferResponse> getAllOffers() {
+//         return offerRepository.findAll().stream()
+//                 .map(offerMapper::toResponse)
+//                 .toList();
+//     }
 
     @Override
     @Transactional(readOnly = true)
