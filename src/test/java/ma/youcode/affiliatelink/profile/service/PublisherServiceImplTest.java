@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ma.youcode.affiliatelink.common.exception.EmailAlreadyUsedException;
 import ma.youcode.affiliatelink.profile.dto.CreatePublisherRequest;
 import ma.youcode.affiliatelink.profile.dto.PublisherResponse;
 import ma.youcode.affiliatelink.profile.enums.Niche;
@@ -52,5 +53,21 @@ public class PublisherServiceImplTest {
 
         verify(profileRepository).existsByEmailIgnoreCase("hakim@gmail.com");
         verify(publisherRepository).save(any());
+    }
+
+    @Test
+    public void createPublisher_shouldThrowException_whenEmailAlreadyExists() {
+        // arrange
+        CreatePublisherRequest request = new CreatePublisherRequest("hakim@gmail.com", "abdelhakim", "allouani",
+                Niche.TECH, "java", "maroc");
+
+        when(profileRepository.existsByEmailIgnoreCase("hakim@gmail.com")).thenReturn(true);
+
+        // act
+        assertThrows(EmailAlreadyUsedException.class, () -> publisherService.createPublisher(request));
+
+        // assert
+        verify(profileRepository).existsByEmailIgnoreCase("hakim@gmail.com");
+        verify(publisherRepository, never()).save(any());
     }
 }
