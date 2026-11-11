@@ -1,5 +1,6 @@
 package ma.youcode.affiliatelink.profile.service;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -42,6 +43,27 @@ public class AdminProfileServiceImplTest {
 
         // assert
         verify(profile).setStatus(ProfileStatus.ACTIVE);
+        verify(profileRepository).findById(profildId);
+        verify(eventPublisher, never()).publishEvent(any());
+
+    }
+
+    @Test
+    public void updateProfileStatus_shouldSuspendActiveProfile() {
+        // arrang
+        Long profildId = 2L;
+
+        Profile profile = mock(Profile.class);
+        when(profileRepository.findById(profildId)).thenReturn(Optional.of(profile));
+        when(profile.getStatus()).thenReturn(ProfileStatus.ACTIVE);
+
+        UpdateProfileStatusRequest request = new UpdateProfileStatusRequest(ProfileStatus.SUSPENDED);
+
+        // act
+        adminProfileService.updateProfileStatus(profildId, request);
+
+        // assert
+        verify(profile).setStatus(ProfileStatus.SUSPENDED);
         verify(profileRepository).findById(profildId);
         verify(eventPublisher, never()).publishEvent(any());
 
