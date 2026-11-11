@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.UpdateProfileStatusRequest;
 import ma.youcode.affiliatelink.profile.entity.Profile;
@@ -82,6 +83,22 @@ public class AdminProfileServiceImplTest {
         UpdateProfileStatusRequest request = new UpdateProfileStatusRequest(ProfileStatus.ACTIVE);
         // assertThrows(ResourceNotFoundException.class, () -> adminProfileService.updateProfileStatus(profilId, request));
         assertThrows(NoSuchElementException.class, () -> adminProfileService.updateProfileStatus(profilId, request));
+        verify(profileRepository).findById(profilId);
+        verify(eventPublisher, never()).publishEvent(any());
+    }
+
+    @Test
+    void updateProfileStatus_shouldThrowException_whenTransitionIsInvalid(){
+        
+        Long profilId = 3L;
+
+        Profile profile = mock(Profile.class);
+        when(profileRepository.findById(profilId)).thenReturn(Optional.of(profile));
+        when(profile.getStatus()).thenReturn(ProfileStatus.PENDING);
+
+        UpdateProfileStatusRequest request = new UpdateProfileStatusRequest(ProfileStatus.SUSPENDED);
+
+        assertThrows(InvalidStatusExcetion.class, () -> adminProfileService.updateProfileStatus(profilId, request));
         verify(profileRepository).findById(profilId);
         verify(eventPublisher, never()).publishEvent(any());
     }
