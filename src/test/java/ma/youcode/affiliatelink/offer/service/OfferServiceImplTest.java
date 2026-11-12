@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
@@ -83,6 +84,23 @@ public class OfferServiceImplTest {
         when(api.getAdvertiserAvailability(advId)).thenReturn(adv);
 
         assertThrows(ResourceNotFoundException.class, () -> offerService.craeteOffer(request));
+
+        verify(api).getAdvertiserAvailability(advId);
+        verifyNoInteractions(tagRepository, offerRepository, offerMapper);
+
+    }
+    @Test
+    void createOffer_shouldThrowException_whenAdvertiserIsInactive() {
+        Long advId = 1L;
+
+        CreateOfferRequest request = new CreateOfferRequest(advId, "Offer1", "Offer Description", "http://example.com",
+                Niche.TECH, Set.of("tag1", "tag2"));
+
+        AdvertiserAvailability adv = new AdvertiserAvailability(true, false);
+
+        when(api.getAdvertiserAvailability(advId)).thenReturn(adv);
+
+        assertThrows(InvalidStatusExcetion.class, () -> offerService.craeteOffer(request));
 
         verify(api).getAdvertiserAvailability(advId);
         verifyNoInteractions(tagRepository, offerRepository, offerMapper);
