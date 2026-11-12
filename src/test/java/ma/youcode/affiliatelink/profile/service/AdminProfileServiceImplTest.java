@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.apache.tomcat.util.file.ConfigurationSource.Resource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
-import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.UpdateProfileStatusRequest;
 import ma.youcode.affiliatelink.profile.entity.Profile;
 import ma.youcode.affiliatelink.profile.enums.ProfileStatus;

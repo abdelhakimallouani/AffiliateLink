@@ -16,6 +16,7 @@ import ma.youcode.affiliatelink.offer.dto.UpdateOfferRequest;
 import ma.youcode.affiliatelink.offer.enums.Niche;
 import ma.youcode.affiliatelink.offer.service.OfferService;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/offres")
 public class OfferController {
+    // @Qualifier("")
     private final OfferService offerService;
 
     public OfferController(OfferService offerService) {

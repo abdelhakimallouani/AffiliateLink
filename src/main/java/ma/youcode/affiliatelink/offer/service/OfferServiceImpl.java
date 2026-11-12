@@ -7,9 +7,11 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
@@ -28,7 +30,9 @@ import ma.youcode.affiliatelink.profile.api.AdvertiserAvailability;
 import ma.youcode.affiliatelink.profile.api.ProfileApi;
 
 @Service
+// @Transactional(propagation = Propagation.REQUIRES_NEW)
 @Transactional
+// @Primary
 public class OfferServiceImpl implements OfferService {
 
     private final OfferRepository offerRepository;
