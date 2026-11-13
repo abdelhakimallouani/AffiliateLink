@@ -35,105 +35,106 @@ import ma.youcode.affiliatelink.profile.api.ProfileApi;
 // @Primary
 public class OfferServiceImpl implements OfferService {
 
-    private final OfferRepository offerRepository;
-    private final TagRepository tagRepository;
-    private final OfferMapper offerMapper;
-    private final ProfileApi api;
+        private final OfferRepository offerRepository;
+        private final TagRepository tagRepository;
+        private final OfferMapper offerMapper;
+        private final ProfileApi api;
 
-    public OfferServiceImpl(OfferRepository offerRepository, TagRepository tagRepository, OfferMapper offerMapper,
-            ProfileApi api) {
-        this.offerRepository = offerRepository;
-        this.tagRepository = tagRepository;
-        this.offerMapper = offerMapper;
-        this.api = api;
-    }
-
-    @Override
-    public OfferResponse craeteOffer(CreateOfferRequest req) {
-        AdvertiserAvailability adv = api.getAdvertiserAvailability(req.advertiserId());
-
-        if (!adv.exists()) {
-            throw new ResourceNotFoundException(
-                    "Annonceur introuvable : " + req.advertiserId());
-        }
-        if (!adv.active()) {
-            throw new InvalidStatusExcetion(
-                    "impossible de creer une offer : " + req.advertiserId());
+        public OfferServiceImpl(OfferRepository offerRepository, TagRepository tagRepository, OfferMapper offerMapper,
+                        ProfileApi api) {
+                this.offerRepository = offerRepository;
+                this.tagRepository = tagRepository;
+                this.offerMapper = offerMapper;
+                this.api = api;
         }
 
-        Set<String> newTags = req.tags().stream().map(t -> t.trim().toLowerCase())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        @Override
+        public OfferResponse craeteOffer(CreateOfferRequest req) {
+                AdvertiserAvailability adv = api.getAdvertiserAvailability(req.advertiserId());
 
-        Set<Tag> tags = newTags.stream()
-                .map(t -> tagRepository.findByName(t).orElseGet(() -> tagRepository.save(new Tag(t))))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                if (!adv.exists()) {
+                        throw new ResourceNotFoundException(
+                                        "Annonceur introuvable : " + req.advertiserId());
+                }
+                if (!adv.active()) {
+                        throw new InvalidStatusExcetion(
+                                        "impossible de creer une offer : " + req.advertiserId());
+                }
 
-        Offer offer = offerMapper.toEntity(req);
+                Set<String> newTags = req.tags().stream().map(t -> t.trim().toLowerCase())
+                                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        tags.forEach(offer::addTag);
+                Set<Tag> tags = newTags.stream()
+                                .map(t -> tagRepository.findByName(t).orElseGet(() -> tagRepository.save(new Tag(t))))
+                                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        Offer saveOffer = offerRepository.save(offer);
+                Offer offer = offerMapper.toEntity(req);
 
-        return offerMapper.toResponse(saveOffer);
+                tags.forEach(offer::addTag);
 
-    }
+                Offer saveOffer = offerRepository.save(offer);
 
-//     @Override
-//     public List<OfferResponse> getAllOffers() {
-//         return offerRepository.findAll().stream()
-//                 .map(offerMapper::toResponse)
-//                 .toList();
-//     }
+                return offerMapper.toResponse(saveOffer);
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<OfferResponse> getOffers(Niche niche, Long advertiserId, String tag, String keyword,
-            Pageable pageable) {
-        return offerRepository.findAll(OfferSpecification.filterOffers(niche, advertiserId, tag, keyword), pageable)
-                .map(offerMapper::toResponse);
-    }
+        }
 
-    @Override
-    @Transactional(readOnly = true)
-    public OfferResponse getOfferById(Long id) {
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id " + id));
+        // @Override
+        // public List<OfferResponse> getAllOffers() {
+        // return offerRepository.findAll().stream()
+        // .map(offerMapper::toResponse)
+        // .toList();
+        // }
 
-        return offerMapper.toResponse(offer);
-    }
+        @Override
+        @Transactional(readOnly = true)
+        public Page<OfferResponse> getOffers(Niche niche, Long advertiserId, String tag, String keyword,
+                        Pageable pageable) {
+                return offerRepository
+                                .findAll(OfferSpecification.filterOffers(niche, advertiserId, tag, keyword), pageable)
+                                .map(offerMapper::toResponse);
+        }
 
-    @Override
-    @Transactional
-    public OfferResponse updateOffer(Long id, UpdateOfferRequest request) {
+        @Override
+        @Transactional(readOnly = true)
+        public OfferResponse getOfferById(Long id) {
+                Offer offer = offerRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with id " + id));
 
-        Offer offer = offerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Offer not found with id: " + id));
+                return offerMapper.toResponse(offer);
+        }
 
-        // offerMapper.updateEntity(request, offer);
-        offer.setTitle(request.title());
-        offer.setDescription(request.description());
-        offer.setTargetUrl(request.targetUrl());
-        offer.setNiche(request.niche());
+        @Override
+        @Transactional
+        public OfferResponse updateOffer(Long id, UpdateOfferRequest request) {
 
-        Set<String> tagNames = request.tags().stream()
-                .map(name -> name.trim().toLowerCase(Locale.ROOT))
-                .filter(name -> !name.isBlank())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                Offer offer = offerRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Offer not found with id: " + id));
 
-        Set<Tag> newTags = tagNames.stream()
-                .map(name -> tagRepository.findByName(name)
-                        .orElseGet(() -> tagRepository.save(new Tag(name))))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                // offerMapper.updateEntity(request, offer);
+                offer.setTitle(request.title());
+                offer.setDescription(request.description());
+                offer.setTargetUrl(request.targetUrl());
+                offer.setNiche(request.niche());
 
-        offer.getTags().forEach(tag -> tag.getOffers().remove(offer));
-        offer.getTags().clear();
+                Set<String> tagNames = request.tags().stream()
+                                .map(name -> name.trim().toLowerCase(Locale.ROOT))
+                                .filter(name -> !name.isBlank())
+                                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        newTags.forEach(offer::addTag);
+                Set<Tag> newTags = tagNames.stream()
+                                .map(name -> tagRepository.findByName(name)
+                                                .orElseGet(() -> tagRepository.save(new Tag(name))))
+                                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        Offer updatedOffer = offerRepository.save(offer);
+                offer.getTags().forEach(tag -> tag.getOffers().remove(offer));
+                offer.getTags().clear();
 
-        return offerMapper.toResponse(updatedOffer);
-    }
+                newTags.forEach(offer::addTag);
+
+                Offer updatedOffer = offerRepository.save(offer);
+
+                return offerMapper.toResponse(updatedOffer);
+        }
 
 }

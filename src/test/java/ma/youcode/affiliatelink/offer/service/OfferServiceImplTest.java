@@ -7,11 +7,20 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import static org.assertj.core.api.Assertions.*;
 
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
@@ -40,6 +49,7 @@ public class OfferServiceImplTest {
     @InjectMocks
     private OfferServiceImpl offerService;
 
+    // creation offer
     @Test
     public void createOffer_shouldCreateOffer_whenAdvertiserIsActive() {
 
@@ -89,6 +99,7 @@ public class OfferServiceImplTest {
         verifyNoInteractions(tagRepository, offerRepository, offerMapper);
 
     }
+
     @Test
     void createOffer_shouldThrowException_whenAdvertiserIsInactive() {
         Long advId = 1L;
@@ -105,6 +116,139 @@ public class OfferServiceImplTest {
         verify(api).getAdvertiserAvailability(advId);
         verifyNoInteractions(tagRepository, offerRepository, offerMapper);
 
+    }
+
+    // test offer by id
+    @Test
+    void getOfferById_shouldReturnOffer_whenOfferExists() {
+        Long advId = 1L;
+
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        when(offerRepository.findById(advId)).thenReturn(Optional.of(offer));
+        when(offerMapper.toResponse(offer)).thenReturn(response);
+
+        OfferResponse offerResponse = offerService.getOfferById(advId);
+
+        assertEquals(response, offerResponse);
+
+        verify(offerRepository).findById(advId);
+        verify(offerMapper).toResponse(offer);
+
+    }
+
+    @Test
+    void getOfferById_shouldThrowException_whenOfferNotFound() {
+        Long offerId = 999L;
+
+        when(offerRepository.findById(offerId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> offerService.getOfferById(offerId));
+
+        verify(offerRepository).findById(offerId);
+        verifyNoInteractions(offerMapper);
+    }
+
+    // get offer by search or filter
+    @Test
+    void getOffers_shouldReturnOffers_whenNoFiltersProvided() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Offer offer = mock(Offer.class);
+        OfferResponse respense = mock(OfferResponse.class);
+
+        mockSearchResult(pageable, offer, respense);
+
+        Page<OfferResponse> result = offerService.getOffers(null, null, null, null, pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).containsExactly(respense);
+
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
+
+        verify(offerMapper).toResponse(offer);
+
+    }
+
+    @Test
+    void getOffers_shouldReturnOffersFilteredByAdvertiserId() {
+
+        // Arrange
+        Long advertiserId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        mockSearchResult(pageable, offer, response);
+
+        // Act
+        Page<OfferResponse> result = offerService.getOffers(
+                null,
+                advertiserId,
+                null,
+                null,
+                pageable);
+
+        // Assert
+        assertThat(result.getContent()).containsExactly(response);
+
+        // Verify
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
+
+        verify(offerMapper).toResponse(offer);
+    }
+
+    @Test
+    void getOffers_shouldReturnOffers_whenMultipleFiltersProvided() {
+
+        // Arrange
+        Niche niche = Niche.TECH;
+        Long advertiserId = 1L;
+        String tag = "java";
+        String keyword = "Spring";
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        mockSearchResult(pageable, offer, response);
+
+        // Act
+        Page<OfferResponse> result = offerService.getOffers(
+                niche,
+                advertiserId,
+                tag,
+                keyword,
+                pageable);
+
+        // Assert
+        assertThat(result.getContent()).containsExactly(response);
+
+        // Verify
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
+
+        verify(offerMapper).toResponse(offer);
+    }
+
+    private void mockSearchResult(
+            Pageable pageable,
+            Offer offer,
+            OfferResponse response) {
+        when(offerRepository.findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable))).thenReturn(new PageImpl<>(List.of(offer), pageable, 1));
+
+        when(offerMapper.toResponse(offer)).thenReturn(response);
     }
 
 }
