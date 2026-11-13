@@ -175,6 +175,39 @@ public class OfferServiceImplTest {
     }
 
     
+@Test
+void getOffers_shouldReturnOffersFilteredByAdvertiserId() {
+
+    // Arrange
+    Long advertiserId = 1L;
+    Pageable pageable = PageRequest.of(0, 10);
+
+    Offer offer = mock(Offer.class);
+    OfferResponse response = mock(OfferResponse.class);
+
+    mockSearchResult(pageable, offer, response);
+
+    // Act
+    Page<OfferResponse> result = offerService.getOffers(
+            null,
+            advertiserId,
+            null,
+            null,
+            pageable
+    );
+
+    // Assert
+    assertThat(result.getContent()).containsExactly(response);
+
+    // Verify
+    verify(offerRepository).findAll(
+            ArgumentMatchers.<Specification<Offer>>any(),
+            eq(pageable)
+    );
+
+    verify(offerMapper).toResponse(offer);
+}
+
 
     private void mockSearchResult(
             Pageable pageable,
