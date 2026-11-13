@@ -7,11 +7,20 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import static org.assertj.core.api.Assertions.*;
 
 import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
@@ -140,6 +149,42 @@ public class OfferServiceImplTest {
 
         verify(offerRepository).findById(offerId);
         verifyNoInteractions(offerMapper);
+    }
+
+    // get offer by search or filter
+    @Test
+    void getOffers_shouldReturnOffers_whenNoFiltersProvided() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Offer offer = mock(Offer.class);
+        OfferResponse respense = mock(OfferResponse.class);
+
+        mockSearchResult(pageable, offer, respense);
+
+        Page<OfferResponse> result = offerService.getOffers(null, null, null, null, pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).containsExactly(respense);
+
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
+
+        verify(offerMapper).toResponse(offer);
+
+    }
+
+    
+
+    private void mockSearchResult(
+            Pageable pageable,
+            Offer offer,
+            OfferResponse response) {
+        when(offerRepository.findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable))).thenReturn(new PageImpl<>(List.of(offer), pageable, 1));
+
+        when(offerMapper.toResponse(offer)).thenReturn(response);
     }
 
 }
