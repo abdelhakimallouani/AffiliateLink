@@ -174,40 +174,71 @@ public class OfferServiceImplTest {
 
     }
 
-    
-@Test
-void getOffers_shouldReturnOffersFilteredByAdvertiserId() {
+    @Test
+    void getOffers_shouldReturnOffersFilteredByAdvertiserId() {
 
-    // Arrange
-    Long advertiserId = 1L;
-    Pageable pageable = PageRequest.of(0, 10);
+        // Arrange
+        Long advertiserId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
-    Offer offer = mock(Offer.class);
-    OfferResponse response = mock(OfferResponse.class);
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
 
-    mockSearchResult(pageable, offer, response);
+        mockSearchResult(pageable, offer, response);
 
-    // Act
-    Page<OfferResponse> result = offerService.getOffers(
-            null,
-            advertiserId,
-            null,
-            null,
-            pageable
-    );
+        // Act
+        Page<OfferResponse> result = offerService.getOffers(
+                null,
+                advertiserId,
+                null,
+                null,
+                pageable);
 
-    // Assert
-    assertThat(result.getContent()).containsExactly(response);
+        // Assert
+        assertThat(result.getContent()).containsExactly(response);
 
-    // Verify
-    verify(offerRepository).findAll(
-            ArgumentMatchers.<Specification<Offer>>any(),
-            eq(pageable)
-    );
+        // Verify
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
 
-    verify(offerMapper).toResponse(offer);
-}
+        verify(offerMapper).toResponse(offer);
+    }
 
+    @Test
+    void getOffers_shouldReturnOffers_whenMultipleFiltersProvided() {
+
+        // Arrange
+        Niche niche = Niche.TECH;
+        Long advertiserId = 1L;
+        String tag = "java";
+        String keyword = "Spring";
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        mockSearchResult(pageable, offer, response);
+
+        // Act
+        Page<OfferResponse> result = offerService.getOffers(
+                niche,
+                advertiserId,
+                tag,
+                keyword,
+                pageable);
+
+        // Assert
+        assertThat(result.getContent()).containsExactly(response);
+
+        // Verify
+        verify(offerRepository).findAll(
+                ArgumentMatchers.<Specification<Offer>>any(),
+                eq(pageable));
+
+        verify(offerMapper).toResponse(offer);
+    }
 
     private void mockSearchResult(
             Pageable pageable,
