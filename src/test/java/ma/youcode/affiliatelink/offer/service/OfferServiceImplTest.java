@@ -109,6 +109,7 @@ public class OfferServiceImplTest {
 
     }
 
+    // test offer by id
     @Test
     void getOfferById_shouldReturnOffer_whenOfferExists() {
         Long advId = 1L;
@@ -126,6 +127,19 @@ public class OfferServiceImplTest {
         verify(offerRepository).findById(advId);
         verify(offerMapper).toResponse(offer);
 
+    }
+
+    @Test
+    void getOfferById_shouldThrowException_whenOfferNotFound() {
+        Long offerId = 999L;
+
+        when(offerRepository.findById(offerId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> offerService.getOfferById(offerId));
+
+        verify(offerRepository).findById(offerId);
+        verifyNoInteractions(offerMapper);
     }
 
 }
