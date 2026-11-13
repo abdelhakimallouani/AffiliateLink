@@ -40,6 +40,7 @@ public class OfferServiceImplTest {
     @InjectMocks
     private OfferServiceImpl offerService;
 
+    // creation offer
     @Test
     public void createOffer_shouldCreateOffer_whenAdvertiserIsActive() {
 
@@ -89,6 +90,7 @@ public class OfferServiceImplTest {
         verifyNoInteractions(tagRepository, offerRepository, offerMapper);
 
     }
+
     @Test
     void createOffer_shouldThrowException_whenAdvertiserIsInactive() {
         Long advId = 1L;
@@ -104,6 +106,25 @@ public class OfferServiceImplTest {
 
         verify(api).getAdvertiserAvailability(advId);
         verifyNoInteractions(tagRepository, offerRepository, offerMapper);
+
+    }
+
+    @Test
+    void getOfferById_shouldReturnOffer_whenOfferExists() {
+        Long advId = 1L;
+
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        when(offerRepository.findById(advId)).thenReturn(Optional.of(offer));
+        when(offerMapper.toResponse(offer)).thenReturn(response);
+
+        OfferResponse offerResponse = offerService.getOfferById(advId);
+
+        assertEquals(response, offerResponse);
+
+        verify(offerRepository).findById(advId);
+        verify(offerMapper).toResponse(offer);
 
     }
 
