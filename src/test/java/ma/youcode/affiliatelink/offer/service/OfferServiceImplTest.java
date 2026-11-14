@@ -270,6 +270,22 @@ public class OfferServiceImplTest {
 
     }
 
+    @Test
+    void updateOffer_shouldThrowException_whenOfferNotFound() {
+        Long offerId = 99L;
+        UpdateOfferRequest request = mock(UpdateOfferRequest.class);
+
+        when(offerRepository.findById(offerId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> offerService.updateOffer(offerId, request));
+
+        verify(offerRepository).findById(offerId);
+
+        verify(offerRepository).findById(offerId);
+        verify(offerRepository, never()).save(any(Offer.class));
+
+    }
+
     private void mockSearchResult(
             Pageable pageable,
             Offer offer,
