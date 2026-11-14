@@ -1,6 +1,7 @@
 package ma.youcode.affiliatelink.offer.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -14,8 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.assertj.core.api.Assertions.assertThat;
 
+import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.offer.dto.CampaignResponse;
 import ma.youcode.affiliatelink.offer.dto.CreateCampaignRequest;
 import ma.youcode.affiliatelink.offer.entity.Campaign;
@@ -74,6 +75,28 @@ public class CampaignServiceImplTest {
 
         assertThat(savedCampaign.getOffer()).isSameAs(offer);
 
+    }
+
+    @Test
+    void createCampaign_shouldThrowException_whenEndDateIsBeforeStartDate() {
+
+        Long offerId = 1L;
+
+        Offer offer = new Offer(offerId, null, null, null, null);
+        when(offerRepository.findById(offerId))
+                .thenReturn(Optional.of(offer));
+
+        CreateCampaignRequest request = new CreateCampaignRequest(
+                "Campagne Test",
+                LocalDateTime.of(2026, 12, 10, 10, 0),
+                LocalDateTime.of(2026, 12, 5, 10, 0),
+                new BigDecimal("1000"),
+                PayoutModel.CPC,
+                new BigDecimal("10"));
+
+        assertThrows(InvalidStatusExcetion.class, () -> campaignService.createCampaign(offerId, request));
+
+        verify(campaignRepository, never()).save(any(Campaign.class));
     }
 
 }
