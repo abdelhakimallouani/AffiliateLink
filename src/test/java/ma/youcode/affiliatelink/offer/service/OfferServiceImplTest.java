@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +27,7 @@ import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.offer.dto.CreateOfferRequest;
 import ma.youcode.affiliatelink.offer.dto.OfferResponse;
+import ma.youcode.affiliatelink.offer.dto.UpdateOfferRequest;
 import ma.youcode.affiliatelink.offer.entity.Offer;
 import ma.youcode.affiliatelink.offer.entity.Tag;
 import ma.youcode.affiliatelink.offer.enums.Niche;
@@ -238,6 +240,50 @@ public class OfferServiceImplTest {
                 eq(pageable));
 
         verify(offerMapper).toResponse(offer);
+    }
+
+    @Test
+    void updateOffer_shouldUpdateOffer_whenOfferExists() {
+        Long offerId = 1L;
+        UpdateOfferRequest request = new UpdateOfferRequest("offfer2", "offer Desprcrition",
+                "https://example-offer.com", Niche.FOOD, Set.of());
+        Offer offer = mock(Offer.class);
+        OfferResponse response = mock(OfferResponse.class);
+
+        when(offerRepository.findById(offerId)).thenReturn(Optional.of(offer));
+        when(offer.getTags()).thenReturn(new LinkedHashSet<>());
+        when(offerRepository.save(offer)).thenReturn(offer);
+        when(offerMapper.toResponse(offer)).thenReturn(response);
+
+        OfferResponse offerResponse = offerService.updateOffer(offerId, request);
+
+        assertEquals(response, offerResponse);
+
+        verify(offerRepository).findById(offerId);
+        verify(offer).setTitle(request.title());
+        verify(offer).setDescription(request.description());
+        verify(offer).setTargetUrl(request.targetUrl());
+        verify(offer).setNiche(request.niche());
+
+        verify(offerRepository).save(offer);
+        verify(offerMapper).toResponse(offer);
+
+    }
+
+    @Test
+    void updateOffer_shouldThrowException_whenOfferNotFound() {
+        Long offerId = 99L;
+        UpdateOfferRequest request = mock(UpdateOfferRequest.class);
+
+        when(offerRepository.findById(offerId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> offerService.updateOffer(offerId, request));
+
+        verify(offerRepository).findById(offerId);
+
+        verify(offerRepository).findById(offerId);
+        verify(offerRepository, never()).save(any(Offer.class));
+
     }
 
     private void mockSearchResult(
