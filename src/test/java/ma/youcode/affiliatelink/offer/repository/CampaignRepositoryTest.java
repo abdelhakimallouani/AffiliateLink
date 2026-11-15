@@ -78,4 +78,19 @@ class CampaignRepositoryTest {
         // Assert
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void existsById_shouldReturnTrue_whenCampaignExists() {
+
+        // Arrange
+        Offer offer = createOffer(1L, "Test Offer");
+
+        Campaign savedCampaign = createCampaign(offer, "Test Campaign", CampaignStatus.ACTIVE);
+
+        // Act
+        boolean result = campaignRepository.existsById(savedCampaign.getId());
+
+        // Assert
+        assertThat(result).isTrue();
+    }
 }
