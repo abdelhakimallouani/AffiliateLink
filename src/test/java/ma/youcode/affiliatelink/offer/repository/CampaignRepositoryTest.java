@@ -65,4 +65,17 @@ class CampaignRepositoryTest {
         assertThat(result.get().getId()).isEqualTo(savedCampaign.getId());
         assertThat(result.get().getName()).isEqualTo("Test Campaign");
     }
+
+    @Test
+    void findById_shouldReturnEmpty_whenCampaignDoesNotExist() {
+
+        // Arrange
+        Long campaignId = 999L;
+
+        // Act
+        Optional<Campaign> result = campaignRepository.findById(campaignId);
+
+        // Assert
+        assertThat(result).isEmpty();
+    }
 }
