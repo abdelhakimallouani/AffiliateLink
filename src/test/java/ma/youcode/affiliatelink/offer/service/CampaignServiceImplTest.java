@@ -105,9 +105,10 @@ public class CampaignServiceImplTest {
     @Test
     void updateCampaignStatus_shouldAllowValidTransitions() {
         Long campaignId = 1L;
-        Campaign campaign = new Campaign("Test Campaign", LocalDateTime.now(), LocalDateTime.now().plusDays(10), new BigDecimal("1000"), PayoutModel.CPC, new BigDecimal("10"));
+        Campaign campaign = new Campaign("Test Campaign", LocalDateTime.now(), LocalDateTime.now().plusDays(10),
+                new BigDecimal("1000"), PayoutModel.CPC, new BigDecimal("10"));
         campaign.setStatus(CampaignStatus.DRAFT);
-        
+
         when(campaignRepository.findById(campaignId)).thenReturn(Optional.of(campaign));
 
         UpdateCampaignStatusRequest request = new UpdateCampaignStatusRequest(CampaignStatus.ACTIVE);
@@ -117,5 +118,26 @@ public class CampaignServiceImplTest {
         assertThat(campaign.getStatus()).isEqualTo(CampaignStatus.ACTIVE);
         verify(campaignRepository).save(campaign);
     }
+
+    // @Test
+    // void updateCampaignStatus_shouldRejectInvalidTransitions() {
+    //     Long campaignId = 1L;
+    //     Campaign campaign = new Campaign("Test Campaign", LocalDateTime.now(), LocalDateTime.now().plusDays(10),
+    //             new BigDecimal("1000"), PayoutModel.CPC, new BigDecimal("10"));
+
+    //     campaign.setStatus(CampaignStatus.ACTIVE);
+
+    //     when(campaignRepository.findById(campaignId)).thenReturn(Optional.of(campaign));
+
+    //     UpdateCampaignStatusRequest request = new UpdateCampaignStatusRequest(CampaignStatus.valueOf("STATUS"));
+
+    //     assertThrows(InvalidStatusExcetion.class, () -> campaignService.updateCampaignStatus(campaignId, request));
+
+    //     // assertThat(campaign.getStatus()).isEqualTo(CampaignStatus.ACTIVE);
+
+    //     // verify(campaignRepository).findById(campaignId);
+    //     verify(campaignRepository, never()).save(any(Campaign.class));
+
+    // }
 
 }
