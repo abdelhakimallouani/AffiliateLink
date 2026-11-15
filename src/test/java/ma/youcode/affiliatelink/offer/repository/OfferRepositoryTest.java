@@ -44,4 +44,17 @@ class OfferRepositoryTest {
         assertThat(result.get().getTitle()).isEqualTo("Test Offer");
         assertThat(result.get().getNiche()).isEqualTo(Niche.TECH);
     }
+
+        @Test
+    void findById_shouldReturnEmpty_whenOfferDoesNotExist() {
+
+        // Arrange
+        Long offerId = 999L;
+
+        // Act
+        Optional<Offer> result = offerRepository.findById(offerId);
+
+        // Assert
+        assertThat(result).isEmpty();
+    }
 }
