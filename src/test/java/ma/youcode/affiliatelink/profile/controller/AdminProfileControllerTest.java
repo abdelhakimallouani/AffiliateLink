@@ -10,13 +10,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 
+import ma.youcode.affiliatelink.common.exception.InvalidStatusExcetion;
 import ma.youcode.affiliatelink.common.exception.ResourceNotFoundException;
 import ma.youcode.affiliatelink.profile.dto.UpdateProfileStatusRequest;
 import ma.youcode.affiliatelink.profile.service.AdminProfileService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @WebMvcTest(AdminProfileController.class)
 public class AdminProfileControllerTest {
@@ -63,7 +62,44 @@ public class AdminProfileControllerTest {
                         }
                         """))
                 .andExpect(status().isNotFound());
-                // .andExpect(jsonPath("$.status").value(404))
-                // .andExpect(jsonPath("$.detail").value("Profile not found"));
+        // .andExpect(jsonPath("$.status").value(404))
+        // .andExpect(jsonPath("$.detail").value("Profile not found"));
+    }
+
+    @Test
+    void updateProfileStatus_shouldReturn409_whenTransitionIsInvalid()
+            throws Exception {
+
+        Long profileId = 1L;
+
+        doThrow(new InvalidStatusExcetion("Invalid status transition"))
+                .when(adminProfileService)
+                .updateProfileStatus(eq(profileId), any(UpdateProfileStatusRequest.class));
+
+        mockMvc.perform(patch("/api/admin/profiles/{id}/status", profileId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "status": "ACTIVE"
+                        }
+                        """)).andExpect(status().isBadRequest());
+        // .andExpect(status().isConflict());
+        // .andExpect(jsonPath("$.status").value(409));
+    }
+
+    @Test
+    void updateProfileStatus_shouldReturn400_whenStatusIsNull()
+            throws Exception {
+
+        mockMvc.perform(patch("/api/admin/profiles/{id}/status", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "status": null
+                        }
+                        """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(adminProfileService);
     }
 }
