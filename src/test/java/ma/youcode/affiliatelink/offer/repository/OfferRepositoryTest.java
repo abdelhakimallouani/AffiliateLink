@@ -3,6 +3,7 @@ package ma.youcode.affiliatelink.offer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -43,5 +44,18 @@ class OfferRepositoryTest {
         assertThat(result.get().getId()).isEqualTo(savedOffer.getId());
         assertThat(result.get().getTitle()).isEqualTo("Test Offer");
         assertThat(result.get().getNiche()).isEqualTo(Niche.TECH);
+    }
+
+    @Test
+    void findById_shouldReturnEmpty_whenOfferDoesNotExist() {
+
+        // Arrange
+        Long offerId = 999L;
+
+        // Act
+        Optional<Offer> result = offerRepository.findById(offerId);
+
+        // Assert
+        assertThat(result).isEmpty();
     }
 }
